@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Поиск промокодов - Цветочные Промокоды</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .search-filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+        .filter-label {
+            font-weight: bold;
+            color: {{ colors.violet }};
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .results-count {
+            background: {{ colors.lavender }};
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .sort-btn {
+            padding: 8px 15px;
+            border: 2px solid {{ colors.lilac }};
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .sort-btn.active {
+            background: {{ colors.lilac }};
+            color: white;
+        }
+        .sort-btn:hover {
+            transform: translateY(-2px);
+        }
+        .discount-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .discount-input {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid {{ colors.lavender }};
+            border-radius: 8px;
+        }
+        .flower-type-badge {
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .flower-type-badge:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+<!-- Универсальная навигация для всех страниц -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, {{ colors.rose }}, {{ colors.violet }});">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-seedling me-2"></i>Цветочные Промокоды
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.url.path == '/' %}active{% endif %}" href="/">
+                        <i class="fas fa-home me-1"></i>Главная
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'search' in request.url.path %}active{% endif %}" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-search me-1"></i>Поиск и фильтры
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/search">
+                            <i class="fas fa-search me-2"></i>Расширенный поиск
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Быстрый поиск по типам:</h6></li>
+                        {% for type_name, emoji in flower_types.items() %}
+                        <li>
+                            <a class="dropdown-item" href="/search?flower_type={{ type_name }}">
+                                {{ emoji }} {{ type_name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/search?sort_by=discount_high">
+                                <i class="fas fa-percentage me-2"></i>Большие скидки
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/search?sort_by=newest">
+                                <i class="fas fa-clock me-2"></i>Новые промокоды
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'rating' in request.url.path %}active{% endif %}" href="/rating">
+                        <i class="fas fa-trophy me-1"></i>Рейтинг
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'recommendations' in request.url.path %}active{% endif %}" href="/recommendations">
+                        <i class="fas fa-lightbulb me-1"></i>Рекомендации
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'howto' in request.url.path %}active{% endif %}" href="/howto">
+                        <i class="fas fa-book me-1"></i>Инструкции
+                    </a>
+                </li>
+            </ul>
+
+            <div class="navbar-nav">
+                {% if username %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/add_promo">
+                                <i class="fas fa-plus-circle me-2"></i>Добавить промокод
+                            </a></li>
+                            <li><a class="dropdown-item" href="/my_promocodes">
+                                <i class="fas fa-tags me-2"></i>Мои промокоды
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/about">
+                                <i class="fas fa-info-circle me-2"></i>О сайте
+                            </a></li>
+                            <li><a class="dropdown-item" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Войти
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">
+                            <i class="fas fa-user-plus me-1"></i>Регистрация
+                        </a>
+                    </li>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-seedling"></i> Цветочные Промокоды
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> Главная</a></li>
+                <li><a href="/search" class="nav-link active"><i class="fas fa-search"></i> Поиск</a></li>
+                <li><a href="/rating" class="nav-link"><i class="fas fa-trophy"></i> Рейтинг</a></li>
+                <li><a href="/recommendations" class="nav-link"><i class="fas fa-lightbulb"></i> Рекомендации</a></li>
+                <li><a href="/howto" class="nav-link"><i class="fas fa-book"></i> Инструкции</a></li>
+                <li><a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> О сайте</a></li>
+                {% if username %}
+                    <li><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                {% else %}
+                    <li><a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4"><i class="fas fa-search"></i> Расширенный поиск промокодов</h1>
+
+        <!-- Форма поиска -->
+        <div class="search-filters">
+            <form method="get" action="/search" id="searchForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="filter-group">
+                            <label class="filter-label"><i class="fas fa-search"></i> Поиск по названию</label>
+                            <input type="text" class="form-control" name="query" value="{{ query or '' }}"
+                                   placeholder="Введите код, магазин или описание...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="filter-group">
+                            <label class="filter-label"><i class="fas fa-store"></i> Магазин</label>
+                            <input type="text" class="form-control" name="shop" value="{{ shop or '' }}"
+                                   placeholder="Название магазина...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="filter-group">
+                            <label class="filter-label"><i class="fas fa-filter"></i> Тип цветов</label>
+                            <div class="sort-options">
+                                <button type="button" class="flower-type-badge" onclick="setFlowerType('all')"
+                                        style="{% if not flower_type or flower_type == 'all' %}background: {{ colors.rose }}; color: white;{% else %}background: {{ colors.lavender }};{% endif %}">
+                                    Все типы
+                                </button>
+                                {% for type_name, emoji in flower_types.items() %}
+                                <button type="button" class="flower-type-badge" onclick="setFlowerType('{{ type_name }}')"
+                                        style="{% if flower_type == type_name %}background: {{ colors.rose }}; color: white;{% else %}background: {{ colors.lavender }};{% endif %}">
+                                    {{ emoji }} {{ type_name }}
+                                </button>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="flower_type" id="flowerTypeInput" value="{{ flower_type or 'all' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="filter-group">
+                            <label class="filter-label"><i class="fas fa-percentage"></i> Сумма скидки</label>
+                            <div class="discount-range">
+                                <input type="number" class="discount-input" name="min_discount"
+                                       value="{{ min_discount or '' }}" placeholder="От" min="0" max="100">
+                                <span>-</span>
+                                <input type="number" class="discount-input" name="max_discount"
+                                       value="{{ max_discount or '' }}" placeholder="До" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group mt-3">
+                    <label class="filter-label"><i class="fas fa-sort"></i> Сортировка</label>
+                    <div class="sort-options">
+                        {% set sort_options = [
+                            ("newest", "Сначала новые", "fa-calendar-plus"),
+                            ("oldest", "Сначала старые", "fa-calendar-minus"),
+                            ("discount_high", "Большая скидка", "fa-sort-amount-down-alt"),
+                            ("discount_low", "Маленькая скидка", "fa-sort-amount-up"),
+                            ("popular", "Популярные", "fa-fire")
+                        ] %}
+                        {% for value, text, icon in sort_options %}
+                        <button type="button" class="sort-btn {% if sort_by == value %}active{% endif %}"
+                                onclick="setSort('{{ value }}')">
+                            <i class="fas {{ icon }}"></i> {{ text }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="sort_by" id="sortByInput" value="{{ sort_by or 'newest' }}">
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn" style="background: {{ colors.rose }}; color: white; padding: 10px 30px;">
+                        <i class="fas fa-search"></i> Найти промокоды
+                    </button>
+                    <a href="/search" class="btn" style="background: {{ colors.lavender }}; margin-left: 10px;">
+                        <i class="fas fa-redo"></i> Сбросить фильтры
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Результаты -->
+        <div class="results-count">
+            <i class="fas fa-list"></i> Найдено промокодов: <strong>{{ promocodes|length }}</strong>
+        </div>
+
+        {% if promocodes %}
+        <div class="row">
+            {% for promo in promocodes %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="promo-card">
+                    <div class="promo-emoji">{{ promo.emoji }}</div>
+
+                    <h4>
+                        <span class="badge" style="background: {{ colors.rose }}; color: white;">
+                            {{ promo.code }}
+                        </span>
+                    </h4>
+
+                    <h5><i class="fas fa-store"></i> {{ promo.shop }}</h5>
+
+                    <div class="mb-2">
+                        <span class="badge" style="background: {{ colors.sunflower }}; color: #333;">
+                            <i class="fas fa-percentage"></i> {{ promo.discount }}
+                        </span>
+                        <span class="badge" style="background: {{ colors.leaf }}; color: white;">
+                            {{ promo.flower_type }} {{ flower_types.get(promo.flower_type, '💐') }}
+                        </span>
+                    </div>
+
+                    {% if promo.description %}
+                    <p><i class="fas fa-info-circle"></i> {{ promo.description }}</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted">
+                                <i class="far fa-clock"></i> {{ promo.created_at }}<br>
+                                <i class="fas fa-copy"></i> Копирований: {{ popularity_stats.get(promo.id, {}).get('copies', 0) }}
+                            </small>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm copy-btn" data-code="{{ promo.code }}"
+                                    style="background: {{ colors.violet }}; color: white;"
+                                    onclick="trackAction({{ promo.id }}, 'copy')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <h4><i class="fas fa-search"></i> Ничего не найдено</h4>
+            <p>Попробуйте изменить параметры поиска или <a href="/">вернитесь на главную</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function setFlowerType(type) {
+            document.getElementById('flowerTypeInput').value = type;
+        }
+
+        function setSort(sortValue) {
+            document.getElementById('sortByInput').value = sortValue;
+            document.getElementById('searchForm').submit();
+        }
+
+        function trackAction(promoId, action) {
+            // Отправляем запрос на трекинг
+            fetch(`/track/${promoId}/${action}`)
+                .then(response => response.json())
+                .then(data => console.log('Action tracked:', data));
+        }
+
+        // Копирование промокода
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const code = this.getAttribute('data-code');
+                navigator.clipboard.writeText(code).then(() => {
+                    const original = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    this.style.background = '#32CD32';
+
+                    setTimeout(() => {
+                        this.innerHTML = original;
+                        this.style.background = '{{ colors.violet }}';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

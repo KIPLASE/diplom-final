@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💡 Рекомендации - Цветочные Промокоды</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .recommendation-card {
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid {{ colors.rose }};
+            position: relative;
+            overflow: hidden;
+        }
+        .recommendation-card::before {
+            content: '💡 Рекомендуем';
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background: {{ colors.rose }};
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .match-score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: {{ colors.sunflower }};
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        .reason-box {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 3px solid {{ colors.leaf }};
+        }
+        .algorithm-info {
+            background: linear-gradient(135deg, {{ colors.lavender }}, {{ colors.lilac }});
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Универсальная навигация для всех страниц -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, {{ colors.rose }}, {{ colors.violet }});">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-seedling me-2"></i>Цветочные Промокоды
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.url.path == '/' %}active{% endif %}" href="/">
+                        <i class="fas fa-home me-1"></i>Главная
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if 'search' in request.url.path %}active{% endif %}" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-search me-1"></i>Поиск и фильтры
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/search">
+                            <i class="fas fa-search me-2"></i>Расширенный поиск
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Быстрый поиск по типам:</h6></li>
+                        {% for type_name, emoji in flower_types.items() %}
+                        <li>
+                            <a class="dropdown-item" href="/search?flower_type={{ type_name }}">
+                                {{ emoji }} {{ type_name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/search?sort_by=discount_high">
+                                <i class="fas fa-percentage me-2"></i>Большие скидки
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/search?sort_by=newest">
+                                <i class="fas fa-clock me-2"></i>Новые промокоды
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'rating' in request.url.path %}active{% endif %}" href="/rating">
+                        <i class="fas fa-trophy me-1"></i>Рейтинг
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'recommendations' in request.url.path %}active{% endif %}" href="/recommendations">
+                        <i class="fas fa-lightbulb me-1"></i>Рекомендации
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'howto' in request.url.path %}active{% endif %}" href="/howto">
+                        <i class="fas fa-book me-1"></i>Инструкции
+                    </a>
+                </li>
+            </ul>
+
+            <div class="navbar-nav">
+                {% if username %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/add_promo">
+                                <i class="fas fa-plus-circle me-2"></i>Добавить промокод
+                            </a></li>
+                            <li><a class="dropdown-item" href="/my_promocodes">
+                                <i class="fas fa-tags me-2"></i>Мои промокоды
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/about">
+                                <i class="fas fa-info-circle me-2"></i>О сайте
+                            </a></li>
+                            <li><a class="dropdown-item" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Войти
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">
+                            <i class="fas fa-user-plus me-1"></i>Регистрация
+                        </a>
+                    </li>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-seedling"></i> Цветочные Промокоды
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> Главная</a></li>
+                <li><a href="/search" class="nav-link"><i class="fas fa-search"></i> Поиск</a></li>
+                <li><a href="/rating" class="nav-link"><i class="fas fa-trophy"></i> Рейтинг</a></li>
+                <li><a href="/recommendations" class="nav-link active"><i class="fas fa-lightbulb"></i> Рекомендации</a></li>
+                <li><a href="/howto" class="nav-link"><i class="fas fa-book"></i> Инструкции</a></li>
+                <li><a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> О сайте</a></li>
+                {% if username %}
+                    <li><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                {% else %}
+                    <li><a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4"><i class="fas fa-lightbulb"></i> Персональные рекомендации</h1>
+        <p class="lead mb-4">Промокоды, подобранные специально для вас, {{ username }}!</p>
+
+        <!-- Информация об алгоритме -->
+        <div class="algorithm-info">
+            <h4><i class="fas fa-robot"></i> Как работают рекомендации:</h4>
+            <p>Наша система анализирует ваши предпочтения и предлагает промокоды, которые могут вам понравиться.</p>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <i class="fas fa-history"></i> <strong>На основе истории</strong><br>
+                    Анализируем ваши добавленные промокоды
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-fire"></i> <strong>Популярность</strong><br>
+                    Учитываем рейтинг и популярность промокодов
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-tags"></i> <strong>Похожие теги</strong><br>
+                    Подбираем по типам цветов и магазинам
+                </div>
+            </div>
+        </div>
+
+        {% if recommendations %}
+        <div class="row">
+            {% for promo in recommendations %}
+            {% set match_score = 85 - loop.index0 * 10 %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="recommendation-card">
+                    <div class="match-score">
+                        <i class="fas fa-percentage"></i> {{ match_score }}% совпадение
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <span style="font-size: 2.5rem;">{{ promo.emoji }}</span>
+                        <h4 class="mt-2" style="color: {{ colors.rose }};">{{ promo.code }}</h4>
+                    </div>
+
+                    <h5><i class="fas fa-store"></i> {{ promo.shop }}</h5>
+
+                    <div class="mb-2">
+                        <span class="badge" style="background: {{ colors.sunflower }}; color: #333; font-size: 1rem;">
+                            <i class="fas fa-percentage"></i> {{ promo.discount }}
+                        </span>
+                        <span class="badge" style="background: {{ colors.leaf }}; color: white;">
+                            {{ promo.flower_type }}
+                        </span>
+                    </div>
+
+                    {% if promo.description %}
+                    <p><i class="fas fa-info-circle"></i> {{ promo.description|truncate(100) }}</p>
+                    {% endif %}
+
+                    <div class="reason-box">
+                        <small><i class="fas fa-bullseye"></i> <strong>Почему рекомендовано:</strong></small>
+                        <p class="mb-0">
+                            {% if promo.flower_type in ['Розы', 'Тюльпаны', 'Лилии'] %}
+                            Похоже на ваши любимые цветы
+                            {% else %}
+                            Популярный промокод с высокой скидкой
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="far fa-clock"></i> {{ promo.created_at }}<br>
+                            <i class="fas fa-user"></i> {{ promo.owner }}
+                        </small>
+
+                        <div>
+                            <button class="btn btn-sm copy-btn" data-code="{{ promo.code }}"
+                                    style="background: {{ colors.violet }}; color: white;">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                            <a href="/search?flower_type={{ promo.flower_type }}"
+                               class="btn btn-sm" style="background: {{ colors.lilac }}; color: white; margin-left: 5px;">
+                                <i class="fas fa-search"></i> Ещё такие
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/search" class="btn btn-lg" style="background: {{ colors.rose }}; color: white; padding: 12px 40px;">
+                <i class="fas fa-search"></i> Найти больше промокодов
+            </a>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <h4><i class="fas fa-user-plus"></i> Нет данных для рекомендаций</h4>
+            <p>Добавьте несколько промокодов, чтобы получить персональные рекомендации!</p>
+            <a href="/add_promo" class="btn" style="background: {{ colors.rose }}; color: white;">
+                <i class="fas fa-plus"></i> Добавить первый промокод
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Копирование промокода
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const code = this.getAttribute('data-code');
+                navigator.clipboard.writeText(code).then(() => {
+                    const original = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    this.style.background = '#32CD32';
+
+                    setTimeout(() => {
+                        this.innerHTML = original;
+                        this.style.background = '{{ colors.violet }}';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

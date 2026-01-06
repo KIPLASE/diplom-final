@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О сайте - Цветочные Промокоды</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .developer-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .academy-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px 0;
+            border: 3px solid white;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li i {
+            color: #FFD700;
+        }
+
+        @keyframes floatDev {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .developer-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: floatDev 3s ease-in-out infinite;
+        }
+
+        .project-timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 2rem 0;
+        }
+
+        .project-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #667eea;
+        }
+    </style>
+</head>
+<body>
+
+            <div class="navbar-nav">
+                {% if username %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/add_promo">
+                                <i class="fas fa-plus-circle me-2"></i>Добавить промокод
+                            </a></li>
+                            <li><a class="dropdown-item" href="/my_promocodes">
+                                <i class="fas fa-tags me-2"></i>Мои промокоды
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/about">
+                                <i class="fas fa-info-circle me-2"></i>О сайте
+                            </a></li>
+                            <li><a class="dropdown-item" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Войти
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">
+                            <i class="fas fa-user-plus me-1"></i>Регистрация
+                        </a>
+                    </li>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-seedling"></i> Цветочные Промокоды
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home"></i> Главная
+                        </a>
+                    </li>
+                    {% if username %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/add_promo">
+                                <i class="fas fa-plus"></i> Добавить промокод
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my_promocodes">
+                                <i class="fas fa-tags"></i> Мои промокоды
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">
+                                <i class="fas fa-sign-in-alt"></i> Войти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/register">
+                                <i class="fas fa-user-plus"></i> Регистрация
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">
+                            <i class="fas fa-info-circle"></i> О сайте
+                        </a>
+                    </li>
+                    {% if username %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- Герой секция -->
+        <div class="developer-card text-center">
+            <div class="developer-avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <h1 class="display-4 mb-3">О проекте</h1>
+            <p class="lead">Учебный проект по веб-разработке на Python</p>
+
+            <div class="academy-badge">
+                <i class="fas fa-graduation-cap"></i> TOP Academy
+            </div>
+        </div>
+
+        <!-- Информация об авторе -->
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h3 class="mb-0"><i class="fas fa-user-tie"></i> Об авторе</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Титов Антон</h4>
+                        <h6 class="card-subtitle mb-3 text-muted">
+                            <i class="fas fa-code"></i> Python-разработчик (обучающийся)
+                        </h6>
+
+                        <div class="mb-4">
+                            <h5><i class="fas fa-graduation-cap text-primary"></i> Образование:</h5>
+                            <p>TOP Academy - курс "Python-разработчик"</p>
+                            <p class="text-muted">Специализация: Backend-разработка, FastAPI, веб-приложения</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5><i class="fas fa-rocket text-success"></i> Цели обучения:</h5>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> Освоить современный стек Python-разработки</li>
+                                <li><i class="fas fa-check"></i> Научиться создавать полноценные веб-приложения</li>
+                                <li><i class="fas fa-check"></i> Разработать портфолио реальных проектов</li>
+                                <li><i class="fas fa-check"></i> Подготовиться к работе в IT-индустрии</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <h3 class="mb-0"><i class="fas fa-laptop-code"></i> Технологии проекта</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="tech-stack">
+                            <span class="tech-item">Python 3.10+</span>
+                            <span class="tech-item">FastAPI</span>
+                            <span class="tech-item">HTML5</span>
+                            <span class="tech-item">CSS3</span>
+                            <span class="tech-item">JavaScript</span>
+                            <span class="tech-item">Bootstrap 5</span>
+                            <span class="tech-item">Jinja2</span>
+                            <span class="tech-item">SQLAlchemy</span>
+                            <span class="tech-item">Git</span>
+                            <span class="tech-item">Uvicorn</span>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5><i class="fas fa-star text-warning"></i> Особенности реализации:</h5>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check-circle"></i> Чистая архитектура с использованием классов</li>
+                                <li><i class="fas fa-check-circle"></i> Реализация REST API</li>
+                                <li><i class="fas fa-check-circle"></i> Аутентификация и авторизация</li>
+                                <li><i class="fas fa-check-circle"></i> Адаптивный дизайн</li>
+                                <li><i class="fas fa-check-circle"></i> Валидация данных</li>
+                                <li><i class="fas fa-check-circle"></i> Система сессий</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Контактная информация -->
+        <div class="card mt-4 mb-5">
+            <div class="card-header bg-light">
+                <h4 class="mb-0"><i class="fas fa-envelope"></i> Контактная информация</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Для связи:</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-user-graduate me-2 text-primary"></i>
+                                <strong>Автор:</strong> Титов Антон
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-university me-2 text-success"></i>
+                                <strong>Учебное заведение:</strong> TOP Academy
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-book me-2 text-info"></i>
+                                <strong>Курс:</strong> Python-разработчик
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Технологии проекта:</h5>
+                        <p>Этот сайт является учебным проектом, демонстрирующим навыки:</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-primary">Backend</span>
+                            <span class="badge bg-success">Frontend</span>
+                            <span class="badge bg-info">Базы данных</span>
+                            <span class="badge bg-warning">API</span>
+                            <span class="badge bg-danger">Deployment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Учебная цель:</strong> Этот проект создан в рамках обучения для демонстрации
+                        практических навыков разработки полноценного веб-приложения.
+                    </div>
+
+                    <p class="text-muted">
+                        <i class="fas fa-code-branch"></i>
+                        Проект находится в открытом доступе и может быть использован
+                        в качестве примера для изучения веб-разработки на Python.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Цитата -->
+        <div class="text-center mb-5">
+            <div class="quote-box p-4" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                <i class="fas fa-quote-left fa-2x text-muted mb-3"></i>
+                <blockquote class="blockquote">
+                    <p class="mb-3">"Программирование — это не просто написание кода, это искусство создания решений."</p>
+                    <footer class="blockquote-footer mt-2">Титов Антон, ученик TOP Academy</footer>
+                </blockquote>
+                <div class="mt-3">
+                    <span class="badge bg-success">Python</span>
+                    <span class="badge bg-primary">FastAPI</span>
+                    <span class="badge bg-warning">Веб-разработка</span>
+                    <span class="badge bg-info">Учебный проект</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-seedling"></i> Цветочные Промокоды</h5>
+                    <p>Учебный проект по веб-разработке</p>
+                    <p class="text-muted">© 2026 Все права защищены</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h5>Разработано:</h5>
+                    <p class="text-warning">
+                        <i class="fas fa-user-graduate"></i> Титов Антон
+                    </p>
+                    <p>
+                        <i class="fas fa-university"></i> TOP Academy
+                    </p>
+                    <p>
+                        <i class="fas fa-code"></i> Python-разработчик
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-4 pt-3 border-top border-secondary">
+                <small class="text-muted">
+                    Этот сайт создан в образовательных целях. Все данные тестовые.
+                </small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Анимация для карточек при прокрутке
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease-out';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

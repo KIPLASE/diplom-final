@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Промокоды для цветов{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-seedling"></i>Flower Promo
+            </a>
+            <ul class="navbar-nav">
+                {% if request.cookies.get('session_id') %}
+                    <li><a href="/" class="nav-link">Главная</a></li>
+                    <li><a href="/add_promo" class="nav-link">Добавить промокод</a></li>
+                    <li><a href="/my_promocodes" class="nav-link">Мои промокоды</a></li>
+                    <li><a href="/logout" class="nav-link">Выход</a></li>
+                {% else %}
+                    <li><a href="/" class="nav-link">Главная</a></li>
+                    <li><a href="/login" class="nav-link">Вход</a></li>
+                    <li><a href="/register" class="nav-link">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Flower Promocodes. Все права защищены.</p>
+            <p>Экономьте на цветах с нашими промокодами!</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.style.background = 'rgba(255,255,255,0.3)';
+                    link.style.fontWeight = 'bold';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
