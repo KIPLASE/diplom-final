@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-exclamation-triangle"></i> Ошибка доступа
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-lock fa-3x text-danger"></i>
+                        </div>
+
+                        <h5 class="card-title text-center">{{ error }}</h5>
+                        <p class="card-text text-center text-muted">
+                            У вас нет прав для выполнения этого действия.
+                        </p>
+
+                        <div class="text-center mt-4">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i> На главную
+                            </a>
+                            <a href="/my_promocodes" class="btn btn-outline-secondary">
+                                <i class="fas fa-tags"></i> Мои промокоды
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

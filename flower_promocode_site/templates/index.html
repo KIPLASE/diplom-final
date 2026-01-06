@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Цветочные Промокоды</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .flower-badge {
+            background: linear-gradient(135deg, {{ random_color }}, #ffffff);
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 5px;
+        }
+        .quote-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid {{ colors.rose }};
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <i class="fas fa-seedling"></i> Цветочные Промокоды
+        </a>
+        <ul class="navbar-nav">
+            {% if username %}
+                <li><span class="nav-link">{{ username }}</span></li>
+                <li><a href="/add_promo" class="nav-link"><i class="fas fa-plus"></i> Добавить</a></li>
+                <li><a href="/my_promocodes" class="nav-link"><i class="fas fa-tags"></i> Мои промокоды</a></li>
+                <li><a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> О сайте</a></li>
+                <li><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+            {% else %}
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> Главная</a></li>
+                <li><a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                <li><a href="/register" class="nav-link"><i class="fas fa-user-plus"></i> Регистрация</a></li>
+                <li><a href="/about" class="nav-link"><i class="fas fa-info-circle"></i> О сайте</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Герой секция -->
+        <div class="hero">
+            <h1><i class="fas fa-tags"></i> {{ stats.random_emoji }} Цветочные Промокоды {{ stats.random_emoji }}</h1>
+            <p class="lead">Самые выгодные скидки на цветы от реальных пользователей!</p>
+
+            <div class="mt-4">
+                {% if not username %}
+                    <a href="/register" class="btn btn-lg" style="background: {{ colors.leaf }}; color: white;">
+                        <i class="fas fa-user-plus"></i> Начать бесплатно
+                    </a>
+                    <a href="/login" class="btn btn-lg" style="background: {{ colors.lavender }}; color: #333;">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </a>
+                {% else %}
+                    <a href="/add_promo" class="btn btn-lg" style="background: {{ colors.rose }}; color: white;">
+                        <i class="fas fa-plus-circle"></i> Добавить промокод
+                    </a>
+                    <a href="/my_promocodes" class="btn btn-lg" style="background: {{ colors.violet }}; color: white;">
+                        <i class="fas fa-tachometer-alt"></i> Моя статистика
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <i class="fas fa-tag fa-2x" style="color: {{ colors.rose }}"></i>
+                    <div class="stat-number">{{ stats.total_promos }}</div>
+                    <div class="stat-label">Всего промокодов</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <i class="fas fa-users fa-2x" style="color: {{ colors.lilac }}"></i>
+                    <div class="stat-number">{{ stats.active_users }}</div>
+                    <div class="stat-label">Пользователей</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <i class="fas fa-quote-right fa-2x" style="color: {{ colors.sunflower }}"></i>
+                    <div class="quote-box">
+                        <i class="fas fa-quote-left"></i> {{ stats.flower_quotes }} <i class="fas fa-quote-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Промокоды -->
+        <h2 class="mb-4"><i class="fas fa-gift"></i> Все промокоды</h2>
+
+        {% if promocodes %}
+            <div class="row">
+                {% for promo in promocodes %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="promo-card">
+                        <div class="promo-emoji">{{ promo.emoji }}</div>
+
+                        <h4>
+                            <span class="flower-badge">{{ promo.code }}</span>
+                        </h4>
+
+                        <h5><i class="fas fa-store"></i> {{ promo.shop }}</h5>
+
+                        <div class="mb-2">
+                            <span class="badge" style="background: {{ colors.sunflower }}; color: #333;">
+                                <i class="fas fa-percentage"></i> {{ promo.discount }}
+                            </span>
+                            <span class="badge" style="background: {{ colors.leaf }}; color: white;">
+                                {{ promo.flower_type }}
+                            </span>
+                        </div>
+
+                        {% if promo.description %}
+                        <p><i class="fas fa-info-circle"></i> {{ promo.description }}</p>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <small class="text-muted">
+                                    <i class="fas fa-user" style="color: {{ promo.owner_color }}"></i> {{ promo.owner }}<br>
+                                    <i class="far fa-clock"></i> {{ promo.created_at }}
+                                </small>
+                            </div>
+
+                            <div>
+                                <button class="btn btn-sm copy-btn" data-code="{{ promo.code }}"
+                                        style="background: {{ colors.violet }}; color: white;">
+                                    <i class="fas fa-copy"></i> Копировать
+                                </button>
+
+                                {% if promo.owner == username %}
+                                <a href="/edit_promo/{{ promo.id }}" class="btn btn-sm"
+                                   style="background: {{ colors.tulip }}; color: white;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <h4><i class="fas fa-info-circle"></i> Промокодов пока нет</h4>
+                <p>Будьте первым, кто добавит промокод!</p>
+                {% if not username %}
+                <a href="/register" class="btn" style="background: {{ colors.rose }}; color: white;">
+                    <i class="fas fa-user-plus"></i> Зарегистрироваться и добавить
+                </a>
+                {% else %}
+                <a href="/add_promo" class="btn" style="background: {{ colors.rose }}; color: white;">
+                    <i class="fas fa-plus"></i> Добавить первый промокод
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 Цветочные Промокоды. Все права защищены.</p>
+            <p>Экономьте на цветах вместе с нами! 🌸</p>
+            <div class="mt-3">
+                <span class="flower-badge">Розы</span>
+                <span class="flower-badge">Тюльпаны</span>
+                <span class="flower-badge">Лилии</span>
+                <span class="flower-badge">Орхидеи</span>
+                <span class="flower-badge">Пионы</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Копирование промокода
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const code = this.getAttribute('data-code');
+                navigator.clipboard.writeText(code).then(() => {
+                    const original = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    this.style.background = '#32CD32';
+
+                    setTimeout(() => {
+                        this.innerHTML = original;
+                        this.style.background = '{{ colors.violet }}';
+                    }, 2000);
+                });
+            });
+        });
+
+        // Анимация для бейджей
+        document.querySelectorAll('.flower-badge').forEach(badge => {
+            badge.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            badge.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
